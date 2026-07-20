@@ -30,6 +30,31 @@ h1 {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
+.alert {
+  position: fixed;
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%) translateY(-20px);
+  background: linear-gradient(135deg, #991b1b 0%, #f87171 100%);
+  color: white;
+  border-radius: 999px;
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 1000;
+  max-width: calc(100% - 2rem);
+  text-align: center;
+  font-weight: 500;
+}
+
+.alert--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
 /* Custom Minimal Checkbox Design */
 #container input[type="checkbox"] {
   appearance: none;

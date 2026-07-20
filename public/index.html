@@ -8,13 +8,25 @@
   </head>
   <body>
     <h1>Checkboxes</h1>
+    <div id="alert" class="alert" aria-live="assertive"></div>
     <div id="container">
       <script src="/socket.io/socket.io.js"></script>
       <script>
         const socket = io();
         const container = document.getElementById("container");
+        const alertBox = document.getElementById("alert");
         const CHECKBOX_COUNT = 100;
 
+        socket.on("server:error", (data) => {
+          const errorMessage =
+            data?.error || "An unknown server error occurred.";
+          alertBox.textContent = `Server error: ${errorMessage}`;
+          alertBox.classList.add("alert--visible");
+          window.clearTimeout(alertBox.hideTimeout);
+          alertBox.hideTimeout = window.setTimeout(() => {
+            alertBox.classList.remove("alert--visible");
+          }, 5000);
+        });
         socket.on("server:checkbox:change", (data) => {
           console.log(`Socket Server EVent`, data);
           const { index, checked } = data;
@@ -25,7 +37,10 @@
           }
         });
 
-        window.addEventListener("load", async () => {
+        async function fetchStateFromServer() {
+          while(container.firstChild){
+            container.removeChild(container.firstChild)
+          }
           const response = await fetch("/checkboxes", { method: "GET" });
           const data = await response.json();
           if (data && data.checkboxes) {
@@ -39,10 +54,15 @@
                 const checked = event.target.checked;
                 console.log("Checkbox changed", { index, checked });
                 socket.emit("client:checkbox:change", { index, checked });
+                fetchStateFromServer();
               });
               container.appendChild(input);
             });
           }
+        }
+
+        window.addEventListener("load", async () => {
+          fetchStateFromServer();
         });
       </script>
     </div>
